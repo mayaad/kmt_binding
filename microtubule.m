@@ -1,44 +1,49 @@
-function [positions] = microtubule(params)
-
-% input: parameters determining microtubule evolution in time 
-% output: position list of all dimers in the microtubule
-% function: evolve microtubule 
-
-    t_steps = params.t_steps;
-    mt_length = params.n_dimers;
+ 
+classdef Microtubule < handle
+    %{
     
-    first_position = zeros(mt_length,2);
-    for i = 1 : mt_length
-        first_position(i,:) = [i, 0]; %x,y position
+    stores data associated with a microtubule
+    
+    Parameters
+    ----------
+    dimer_positions: 3d matrix
+        positions of the dimers of the microtubule. Has shape 
+        (2, number of dimers, number of time steps). The 2 comes from the
+        fact that the microtubule position can be defined by only two
+        dimensions, because microtubule bending takes place in one plane
+    dimer_length: float
+        length of the the dimers makting up the microtubule
+    %}
+    
+    properties
+        dimer_positions
+        dimer_length
     end
-    positions = zeros(mt_length,2,t_steps);
-    positions(:, :, 1) = first_position;
-    
-%     % first option. a straight microtubule that stays straight
-%     figure
-%     for i = 2 : t_steps
-%         positions(:, :, i) = positions(:, :, 1);
-%         plot(positions(:, 1, i), positions(:, 2, i))
-%         hold on
-%     end
-%     title('option 1. straight microtubule that stays straight over time.')
-    
-    % second option. a straight microtubule that bends over time.
-    max_bend = mt_length / 5;
-    figure
-    for i = 2 : t_steps
-        
-        for j = 1 : mt_length
-            positions(j, 2, i) = positions(j, 2, i-1) + max_bend/j;
-            positions(j, 1, i) = positions(j, 1, i-1);
+    methods
+        function obj = Microtubule(dimer_positions, dimer_length)
+            % constructor function
+            obj.dimer_positions = dimer_positions;
+            obj.dimer_length = dimer_length;
         end
+        function curve(obj)
+            % curves the microtubule over time
+            
+            % get some parameters from the positions matrices
+            num_dimers = size(obj.dimer_positions,2);
+            num_time_steps = size(obj.dimer_positions,3);
+            
+            max_bend = num_dimers/5;
+             
+            % dimer y-positions are shifted up at each timestep according
+            % to the curvature defined by max_bend
+            obj.dimer_positions(2,:,2:end) = obj.dimer_positions(2,:,1:end-1)...
+                + cumsum(reshape(repmat(max_bend./(1:obj.dimer_length:num_dimers),...
+                num_time_steps-1,1)',[1,num_dimers,num_time_steps-1]),3);
+            
+            % dimer x-positions are shifted back one timestep
+            obj.dimer_positions(1,:,2:end) = obj.dimer_positions(1,:,1:end-1);
         
-        plot(positions(:, 1, i), positions(:, 2, i))
-        hold on
+        end
     end
-    title('option 2. straight microtubule that bends over time.')
-    
-    % third option. get more creative and add some stochasticity!
-    
-   
 end
+    
