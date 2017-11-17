@@ -67,11 +67,11 @@ classdef Microtubule < handle
                     change_variable = rand();
                     
                     if obj.phos_state(1, j, i-1) == 1 % dimer was GTP
-                        if rand > prob_dephos
+                        if change_variable > prob_dephos
                             obj.phos_state(1, j, i) = 0; % dimer becomes GDP
                         end
                     elseif obj.phos_state(1, j, i-1) == 0 % dimer was GDP
-                        if rand > prob_phos
+                        if change_variable > prob_phos
                             obj.phos_state(1, j, i) = 0; % dimer becomes GTP
                         end
                     end
