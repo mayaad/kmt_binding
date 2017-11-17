@@ -32,7 +32,27 @@ classdef Kinetochore < handle
         end
         
         function diffuse_bind_unbind(obj, microtubule, prob_bind, prob_unbind, binding_distance, hec1_step)
-            % generates positions of tethered random walk
+            %{
+            
+            Calculates diffusion and binding/unbinding of hec1 proteins in
+            the kinetochore. Does not return a value, but updates
+            kinetochore.hec1_positions and kinetochore.hec1_bound
+
+            Parameters
+            ----------
+            kinetochore: Kinetochore object
+                kinetochore whose binding we are simulating
+            microtubule: Microtubule object
+                microtbule that the kinetochore is binding to
+            prob_bind: float
+                prbability of binding, related to k_bind
+            prob_unbind: float
+                probability of unbinding, related to k_unbind
+            binding_distance: float
+                distance at which kinetochore can bind to microtubule
+            hec1_step: float
+                length of step of hec1 random walk
+            %}
             
             % get some parameters from position matries
             num_time_steps = size(obj.hec1_positions,3);
