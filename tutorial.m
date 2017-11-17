@@ -35,7 +35,7 @@ hold off
 figure
 hold on
 for time_step = 1 : num_time_steps
-    plot(microtubule.phos_state)
+    plot(microtubule.phos_state(:, :, time_step))
 end
 xlabel('x-position')
 ylabel('phosphorylation state (0-GDP, 1-GTP)')

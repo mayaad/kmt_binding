@@ -18,6 +18,8 @@ classdef Microtubule < handle
     properties
         dimer_positions
         dimer_length
+        phos_state
+        phos_params
     end
     methods
         function obj = Microtubule(dimer_positions, dimer_length, phosphor)
