@@ -31,8 +31,28 @@ classdef Kinetochore < handle
             obj.tether_length = tether_length;
         end
         
-        function diffuse(obj)
-            % generates positions of tethered random walk
+        function diffuse_bind_unbind(obj, microtubule, prob_bind, prob_unbind, binding_distance, hec1_step)
+            %{
+            
+            Calculates diffusion and binding/unbinding of hec1 proteins in
+            the kinetochore. Does not return a value, but updates
+            kinetochore.hec1_positions and kinetochore.hec1_bound
+
+            Parameters
+            ----------
+            kinetochore: Kinetochore object
+                kinetochore whose binding we are simulating
+            microtubule: Microtubule object
+                microtbule that the kinetochore is binding to
+            prob_bind: float
+                prbability of binding, related to k_bind
+            prob_unbind: float
+                probability of unbinding, related to k_unbind
+            binding_distance: float
+                distance at which kinetochore can bind to microtubule
+            hec1_step: float
+                length of step of hec1 random walk
+            %}
             
             % get some parameters from position matries
             num_time_steps = size(obj.hec1_positions,3);
@@ -41,31 +61,67 @@ classdef Kinetochore < handle
             % generate random numbers for random walk
             rand_steps = rand(3, num_hec1, num_time_steps);
             
+            % generate random numbers to compare to binding probability
+            rand_bind = rand(num_hec1, num_time_steps);
+            
+            % generate random numbers to compare to unbinding probability
+            rand_unbind = rand(num_hec1, num_time_steps); 
+            
+            % intialize array for minimum distance to microtubule
+            min_distance_mt = zeros(num_hec1,num_time_steps);
+            
             % TODO: get rid of this loop
             for time=2:num_time_steps
-                % generate the random walk
-                % TODO: replace +/- 1 with a step size
-                rand_step_time = rand_steps(:,:,time);
-                rand_step_time(rand_step_time<0.5) = -1;
-                rand_step_time(rand_step_time>=0.5) = +1;              
-                obj.hec1_positions(:,:,time) = obj.hec1_positions(:,:,time-1)+...
-                    rand_step_time;
+                % get the indices of the unbound hec1s
+                ind_unbound = find(obj.hec1_bound(:,time)==0);
+                ind_bound = find(obj.hec1_bound(:,time)==1);
+                
+                % generate the random walk for unbound hec1
+                rand_step_time = rand_steps(:,ind_unbound,time);
+                rand_step_time(rand_step_time<0.5) = - hec1_step;
+                rand_step_time(rand_step_time>=0.5) = + hec1_step;              
+                obj.hec1_positions(:,ind_unbound,time) = ...
+                    obj.hec1_positions(:,ind_unbound,time-1) + rand_step_time;
                 
                 % If the hec1 is outside the tether, bring it back to where it
                 % was the timestep before
-                distance = obj.hec1_positions(1,:,time).^2 + ...
-                    obj.hec1_positions(2,:,time).^2 +...
-                    obj.hec1_positions(3,:,time).^2;
-                ind = find(distance > obj.tether_length);
-                obj.hec1_positions(:,ind,time) = obj.hec1_positions(:,ind,time-1);             
+                distance = obj.hec1_positions(1,ind_unbound,time).^2 + ...
+                    obj.hec1_positions(2,ind_unbound,time).^2 +...
+                    obj.hec1_positions(3,ind_unbound,time).^2;
+                ind_out = find(distance > obj.tether_length);
+                obj.hec1_positions(:,ind_out,time) = obj.hec1_positions(:,ind_out,time-1); 
+                
+                % keep bound hec1 in same position
+                obj.hec1_positions(:, ind_bound, time) = ...
+                    obj.hec1_positions(:,ind_bound,time-1);
+                
+                % find the minumum distance to the microtubule
+                % TODO: definitely get rid of this loop. 
+                for hec1 = 2:num_hec1
+                    min_distance_mt(hec1,time) = sqrt(min(...
+                        (obj.hec1_positions(1,hec1,time)-microtubule.dimer_positions(1,:,time)).^2 +...
+                        (obj.hec1_positions(2,hec1,time)-microtubule.dimer_positions(2,:,time)).^2+...
+                        (obj.hec1_positions(3,hec1,time)).^2));
+                end
+                
+                % find indices for unbound hec1 that bind
+                ind_bind_new = find(min_distance_mt(:,time)<binding_distance...
+                    & rand_bind(:,time)<prob_bind);
+                
+                % find indices for bound hec1 that stay bound
+                ind_bind_stay = find(min_distance_mt(:,time)<binding_distance...
+                    & obj.hec1_bound(:,time-1)==1 & rand_unbind(:,time)>prob_unbind);
+                
+                % find indices for bound hec1 that unbind
+                ind_unbind_new = find(min_distance_mt(:,time)<binding_distance...
+                    & obj.hec1_bound(:,time-1)==1 & rand_unbind(:,time)<prob_unbind);
+                
+                % update hec1_bound
+                obj.hec1_bound(ind_bind_new,time) =  1;
+                obj.hec1_bound(ind_bind_stay,time) = 1;
+                obj.hec1_bound(ind_unbind_new,time) = 0;
+
             end            
-        end
-        
-        function bind_unbind(obj, microtubule)
-            % TODO: write this function, may have to combine with
-            % diffuse() or call diffuse() in this function
-            
-            
         end
         function fraction_bound = calc_fraction_bound(obj)
                 %{
