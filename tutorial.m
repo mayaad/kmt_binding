@@ -31,6 +31,16 @@ xlabel('x-position')
 ylabel('y-position')
 hold off
 
+% plot microtubule phosphorylation state over time
+figure
+hold on
+for time_step = 1 : num_time_steps
+    plot(microtubule.phos_state)
+end
+xlabel('x-position')
+ylabel('phosphorylation state (0-GDP, 1-GTP)')
+hold off
+
 % let the kinetochore diffuse
 kinetochore.diffuse_bind_unbind(microtubule,prob_bind, prob_unbind, binding_distance, hec1_step)
 
