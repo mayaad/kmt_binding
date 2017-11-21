@@ -13,6 +13,11 @@ classdef Microtubule < handle
         dimensions, because microtubule bending takes place in one plane
     dimer_length: float
         length of the the dimers makting up the microtubule
+    phosphor: structure containing
+        1) phos_state: vector
+            phosphorylation state (0 GDP, 1 GTP) of each dimer
+        2) params: vector
+            probabilities: [p(phos|dephos), p(dephos|phos)]
     %}
     
     properties
@@ -67,12 +72,12 @@ classdef Microtubule < handle
                     change_variable = rand();
                     
                     if obj.phos_state(1, j, i-1) == 1 % dimer was GTP
-                        if rand > prob_dephos
+                        if change_variable > prob_dephos
                             obj.phos_state(1, j, i) = 0; % dimer becomes GDP
                         end
                     elseif obj.phos_state(1, j, i-1) == 0 % dimer was GDP
-                        if rand > prob_phos
-                            obj.phos_state(1, j, i) = 0; % dimer becomes GTP
+                        if change_variable > prob_phos
+                            obj.phos_state(1, j, i) = 1; % dimer becomes GTP
                         end
                     end
                 end

@@ -1,6 +1,6 @@
 
 function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,...
-    tether_length, num_dimers, dimer_length)
+    tether_length, num_dimers, dimer_length, phosphor_params)
     %{
     
     Initializes a kinetochore object with all hec1 proteins at the origin
@@ -18,6 +18,12 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
         number of dimers in the microtubule
     dimer_length: double
         length of dimers making up microtubule
+    phosphor: structure containing
+        1) phos_state: vector 
+            phosphorylation state (0 GDP, 1 GTP) of each dimer 
+        2) params: vector
+            probabilities: [p(phos|dephos), p(dephos|phos)]
+            (assigned by input to function "phosphor_params")
     
     Returns
     -------
@@ -40,10 +46,8 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
     dimer_positions(1,:,:) = reshape(repmat(1:dimer_length:num_dimers,...
         num_time_steps,1)',[1,num_dimers,num_time_steps]);
     phosphor.phos_state = zeros(1, num_dimers, num_time_steps); 
-        %1- GTPtubulin (phosphorylated), 0- GDPtubulin (dephosphorylated)
     phosphor.phos_state(:, :, 1) = ones(1, num_dimers);
-    phosphor.params = [0.5, 0.5];
-        % [p(phos|dephos), p(dephos|phos)]
+    phosphor.params = phosphor_params;
     
     % construct microtubule object
     microtubule = Microtubule(dimer_positions, dimer_length, phosphor);

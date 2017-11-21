@@ -12,14 +12,17 @@ binding_distance = 0.05;
 num_dimers = 10;
 dimer_length = 1;
 hec1_step = 0.5; % length of each step taken by hec1 in random walk
+mt_phosphor_params = [0.9, 0.9]; % microtubule phosphorylation probabilities
+                                 % [p(phos|dephos), p(dephos|phos)]
 
 % initialize the kinetochore and microtubule
 [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,...
-    tether_length, num_dimers, dimer_length);
+    tether_length, num_dimers, dimer_length, mt_phosphor_params);
 
 
 % let the microtubule curve
 microtubule.curve()
+microtubule.phosphorylate()
 
 % plot the microtubule positions over time
 figure
