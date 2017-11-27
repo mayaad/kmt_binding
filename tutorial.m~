@@ -38,11 +38,9 @@ tstep = 1;
 % minimization_data.num_time_steps = size(microtubule.dimer_positions,3);
 % minimization_data.phosphor_state = microtubule.phos_state;
 positions = microtubule.dimer_positions(:, :, tstep);
-phos_state = microtubule.phos_state(:, :, tstep);
-constants = [microtubule.e_params.S, microtubule.e_params.B, microtubule.e_params.k, microtubule.e_params.theta];
 
-fun = @minimizer_target;
-[new_pos, min_energy] = fminunc(fun, positions);
+fun = 
+[new_pos, min_energy] = fminunc(minimizer_target(microtubule, positions, minimization_data.phosphor_state), minimization_data.curr_pos);
 
 % END OF PLAYGROUND. 
 

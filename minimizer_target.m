@@ -1,16 +1,17 @@
-function [total_energy] = minimizer_target(positions, phos_state)
+function [total_energy] = minimizer_target(constants, positions, phos_state)
 
-S = obj.e_params.S; % spring const
-B = obj.e_params.B; % bending const
-k = obj.e_params.k; % resting spring length
-theta = obj.e_params.theta; % dephosphor angle
+S = constants(1);  % spring const
+B = constants(2); % bending const
+k = constants(3); % resting spring length
+theta = constants(4); % dephosphor angle
 
 total_energy = 0;
 for i = 2 : (size(positions, 2)-1)
-    spring_energy = 0.5*S*(positions(i, 2) - k);
+    a = 3
+    spring_energy = 0.5*S*(positions(2,i) - k);
     
-    alpha = atan( abs(positions(i,2)-positions(i-1,2))/abs(positions(i,1)-postiions(i-1,1)) );
-    beta = atan( abs(positions(i+1,2)-positions(i,2))/abs(positions(i+1,1)-postiions(i,1)) );
+    alpha = atan( abs(positions(2,i)-positions(2,i-1))/abs(positions(1,i)-positions(1,i-1)) );
+    beta = atan( abs(positions(2,i+1)-positions(2,i))/abs(positions(1,i+1)-positions(1,i)) );
     dimer_theta = pi - (alpha+beta);
     adjusted_angle = dimer_theta - (1-phos_state(i))*theta;
     bending_energy = -B*cos(adjusted_angle);

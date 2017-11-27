@@ -92,27 +92,32 @@ classdef Microtubule < handle
             end
         end
         
-        function [new_pos, min_energy] = min_energy(obj, tstep)
-            % determines new coordinates for microtubule dimers at each
-            % time point by enforcing energy minimization for 3 rules:
-            %   1) length between neighboring dimers is fixed (no stretch)
-            %   2) spring energy between dimer and substrate
-            %   3) bending energy between neighboring dimers based on
-            %   phosphorylation state (dephos prefers 23deg, phos 0deg)
-            
-            % this function will eventually render "curve" obsolete
-            
-            num_dimers = size(obj.dimer_positions,2);
-            num_time_steps = size(obj.dimer_positions,3);
-            phosphor_state = obj.phos_state;
-            
-            curr_pos = obj.dimer_positions(:, :, tstep);
-            % use current positions as the initial guess for the
-            % minimization function
-            
-            [new_pos, min_energy] = fminsearch(@total_energy, curr_pos);
-            
-        end
+%         function [new_pos, min_energy] = min_energy(data)
+%             % determines new coordinates for microtubule dimers at each
+%             % time point by enforcing energy minimization for 3 rules:
+%             %   1) length between neighboring dimers is fixed (no stretch)
+%             %   2) spring energy between dimer and substrate
+%             %   3) bending energy between neighboring dimers based on
+%             %   phosphorylation state (dephos prefers 23deg, phos 0deg)
+%             
+%             % this function will eventually render "curve" obsolete
+%             
+%             num_dimers = data.num_dimers;
+%             num_time_steps = data.num_time_steps;
+%             phosphor_state = data.phosphor_state;
+%             curr_pos = data.curr_pos;
+%             
+% %             num_dimers = size(obj.dimer_positions,2);
+% %             num_time_steps = size(obj.dimer_positions,3);
+% %             phosphor_state = obj.phos_state;
+% %             
+% %             curr_pos = obj.dimer_positions(:, :, tstep);
+%             % use current positions as the initial guess for the
+%             % minimization function
+%             
+%             [new_pos, min_energy] = fminsearch(@minimizer_target, curr_pos);
+%             
+%         end
 
     end
 end
