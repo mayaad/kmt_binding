@@ -14,15 +14,21 @@ dimer_length = 1;
 hec1_step = 0.5; % length of each step taken by hec1 in random walk
 mt_phosphor_params = [0.9, 0.9]; % microtubule phosphorylation probabilities
                                  % [p(phos|dephos), p(dephos|phos)]
+e_params.S = 1e9; % spring constant for microtubule (0.38 - 2 GPa)
+e_params.B = 7e-24; % bending rigidity for microtubule (7e-25 - 7e-23 Nm^2)
+e_params.k = 1; % resting spring length between substrate and dimer
+e_params.theta = 23; % preferred angle for gdp tubulin
 
 % initialize the kinetochore and microtubule
 [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,...
-    tether_length, num_dimers, dimer_length, mt_phosphor_params);
+    tether_length, num_dimers, dimer_length, mt_phosphor_params, e_params);
 
-
-% let the microtubule curve
+% let the microtubule curve and change phosphorylation state
 microtubule.curve()
 microtubule.phosphorylate()
+% TO DO: curvature needs to reflect phosphorylation state based on energy
+% minimization
+[pos, min_e] = microtubule.min_energy(1)
 
 % plot the microtubule positions over time
 figure
@@ -57,6 +63,7 @@ for hec1=1:num_hec1
     hold on
 end
 hold off
+title('time course tracks of hec1 molecules')
 % TODO: let the kinetochore bind and unbind
 
 % calculate the fraction bound for each time step

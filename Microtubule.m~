@@ -13,19 +13,34 @@ classdef Microtubule < handle
         dimensions, because microtubule bending takes place in one plane
     dimer_length: float
         length of the the dimers makting up the microtubule
+    phosphor: structure containing
+        1) phos_state: vector
+            phosphorylation state (0 GDP, 1 GTP) of each dimer
+        2) params: vector
+            probabilities: [p(phos|dephos), p(dephos|phos)]
+    energy_params: structure containing parameters for microtubule energy 
+        minimization:
+        1) S = spring constant
+        2) B = bending rigidity 
+        3) k = resting spring length
+        4) theta = preferred angle for dephosphorylated tubulin
     %}
     
     properties
         dimer_positions
         dimer_length
+        phos_state
+        phos_params
+        e_params
     end
     methods
-        function obj = Microtubule(dimer_positions, dimer_length, phosphor)
+        function obj = Microtubule(dimer_positions, dimer_length, phosphor, energy_params)
             % constructor function
             obj.dimer_positions = dimer_positions;
             obj.dimer_length = dimer_length;
             obj.phos_state = phosphor.phos_state;
             obj.phos_params = phosphor.params;
+            obj.e_params = energy_params;
         end
 
         function curve(obj)
@@ -64,25 +79,65 @@ classdef Microtubule < handle
                 for j = 1 : num_dimers
                     change_variable = rand();
                     
-                    if obj.phos_state(1, j, i-1) == 1
-                        if rand > 
-                        
-                        
-                        
-                    elseif obj.phos_state(1, j, i-1) == 0
-                        
-                        
-                        
+                    if obj.phos_state(1, j, i-1) == 1 % dimer was GTP
+                        if change_variable > prob_dephos
+                            obj.phos_state(1, j, i) = 0; % dimer becomes GDP
+                        end
+                    elseif obj.phos_state(1, j, i-1) == 0 % dimer was GDP
+                        if change_variable > prob_phos
+                            obj.phos_state(1, j, i) = 1; % dimer becomes GTP
+                        end
                     end
-                    
-                    
                 end
-                
-                
-                
             end
-            
         end
+        
+        function new_positions = min_energy(obj, tstep)
+            % determines new coordinates for microtubule dimers at each
+            % time point by enforcing energy minimization for 3 rules:
+            %   1) length between neighboring dimers is fixed (no stretch)
+            %   2) spring energy between dimer and substrate
+            %   3) bending energy between neighboring dimers based on
+            %   phosphorylation state (dephos prefers 23deg, phos 0deg)
+            
+            % this function will eventually render "curve" obsolete 
+            
+            num_dimers = size(obj.dimer_positions,2);
+            num_time_steps = size(obj.dimer_positions,3);
+            phosphor_state = phosphor.phos_state;
+            
+            curr_pos = obj.dimer_positions(:, :, tstep);
+            % use current positions as the initial guess for the 
+            % minimization function
+            
+            [new_pos, min_energy] = fminsearch(@total_energy(curr_pos, 
+            
+            
+            %new_positions = zeros(size(obj.dimer_positions(:, :, tstep)));
+        end
+        
+        function total_energy = minimizer_target(positions, phos_state)
+            
+            S = obj.e_params.S; % spring const
+            B = obj.e_params.B; % bending const
+            k = obj.e_params.k; % resting spring length
+            theta = obj.e_params.theta; % dephosphor angle
+            
+            total_energy = 0;
+            for i = 2 : (size(positions, 2)-1)
+                spring_energy = 0.5*S*(positions(i, 2) - k);
+                
+                alpha = atan( abs(positions(i,2)-positions(i-1,2))/abs(positions(i,1)-postiions(i-1,1)) );
+                beta = atan( abs(positions(i+1,2)-positions(i,2))/abs(positions(i+1,1)-postiions(i,1)) );
+                dimer_theta = pi - (alpha+beta);
+                adjusted_angle = dimer_theta - (1-phos_state(i))*theta;
+                bending_energy = -B*cos(adjusted_angle);
+                
+                dimer_energy = spring_energy + bending_energy;
+                total_energy = total_energy + dimer_energy;
+            end
+        end
+        
     end
 end
     
