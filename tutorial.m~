@@ -29,20 +29,33 @@ microtubule.curve()
 microtubule.phosphorylate()
 
 
-% START OF PLAYGROUND. NOT DONE. STILL WORKING ON THIS. 
+% find new positions at next time step based on energy minimization
+% TO DO: still need to make this a loop where phos state is updated in the
+% loop and positions are calculated over time 
 
-% TO DO: curvature needs to reflect phosphorylation state based on energy
-% minimization
-tstep = 1;
-% minimization_data.num_dimers = size(microtubule.dimer_positions,2);
-% minimization_data.num_time_steps = size(microtubule.dimer_positions,3);
-% minimization_data.phosphor_state = microtubule.phos_state;
-positions = microtubule.dimer_positions(:, :, tstep);
+for tstep = 1
 
-fun = 
-[new_pos, min_energy] = fminunc(minimizer_target(microtubule, positions, minimization_data.phosphor_state), minimization_data.curr_pos);
+phos_state = microtubule.phos_state(:, :, tstep);
 
-% END OF PLAYGROUND. 
+energy_function = minimizer_target(microtubule.e_params, microtubule.dimer_positions(:,:,tstep), phos_state);
+
+% create input vector of initial guess for positions (use previous
+% positions) -> need to reshape initial guess vector to be 1 row with
+% 2*num_dimers columns
+% guess(1:num_dimers) -> x values; guess(num_dimers+1, 2*num_dimers) -> y values
+init_guess = [microtubule.dimer_positions(1,:, tstep), microtubule.dimer_positions(2,:, tstep)];
+
+[new_pos, 
+
+
+
+
+end
+
+disp('done')
+
+
+%%
 
 
 % plot the microtubule positions over time
