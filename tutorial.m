@@ -29,22 +29,18 @@ microtubule.curve()
 microtubule.phosphorylate()
 
 
-% START OF PLAYGROUND. NOT DONE. STILL WORKING ON THIS. 
-
 % TO DO: curvature needs to reflect phosphorylation state based on energy
 % minimization
-tstep = 1;
-% minimization_data.num_dimers = size(microtubule.dimer_positions,2);
-% minimization_data.num_time_steps = size(microtubule.dimer_positions,3);
-% minimization_data.phosphor_state = microtubule.phos_state;
+tstep = 1; %change this later to be in a for loop?
 positions = microtubule.dimer_positions(:, :, tstep);
 phos_state = microtubule.phos_state(:, :, tstep);
-constants = [microtubule.e_params.S, microtubule.e_params.B, microtubule.e_params.k, microtubule.e_params.theta];
 
-fun = @minimizer_target;
-[new_pos, min_energy] = fminunc(fun, positions);
+energy_function = minimizer_target(microtubule.e_params, positions, phos_state);
 
-% END OF PLAYGROUND. 
+
+
+
+%%
 
 
 % plot the microtubule positions over time
