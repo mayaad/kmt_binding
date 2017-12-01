@@ -49,8 +49,8 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
     
     % initialize microtubule properties
     dimer_positions = zeros(2, num_dimers, num_time_steps);
-    dimer_positions(1,:,:) = reshape(repmat(1:dimer_length:num_dimers,...
-        num_time_steps,1)',[1,num_dimers,num_time_steps]);
+    dimer_positions(1,:,:) = reshape(repmat(1:1:num_dimers,...
+       num_time_steps,1)',[1,num_dimers,num_time_steps]);
     phosphor.phos_state = zeros(1, num_dimers, num_time_steps); 
     phosphor.phos_state(:, :, 1) = ones(1, num_dimers);
     phosphor.params = phosphor_params;
@@ -58,6 +58,3 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
     % construct microtubule object
     microtubule = Microtubule(dimer_positions, dimer_length, phosphor, e_params);
 end
-
-
-

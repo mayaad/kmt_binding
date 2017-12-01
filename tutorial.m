@@ -5,20 +5,20 @@ Tutorial for running a kinetochore microtubule binding simulation
 close all
 
 % choose initial parameters
-num_time_steps = 30;
-num_hec1 = 4;
-tether_length = 1;
+num_time_steps = 50;
+num_hec1 = 10;
+tether_length = 10e-9;
 prob_bind=0.4; % related to k_bind
 prob_unbind=1e-4; % related to k_unbind
-binding_distance = 0.05;
-num_dimers = 4;
-dimer_length = 1;
-hec1_step = 0.5; % length of each step taken by hec1 in random walk
-mt_phosphor_params = [0.5, 0.5]; % microtubule phosphorylation probabilities
+binding_distance = 5e-9;
+num_dimers = 8;
+dimer_length = 6e-9; % 6 nm per tubulin dimer
+hec1_step = 0.5e-9; % length of each step taken by hec1 in random walk
+mt_phosphor_params = [0.2, 0.5]; % microtubule phosphorylation probabilities
                                  % [p(phos|dephos), p(dephos|phos)]
-e_params.S = 1; % spring constant for microtubule (0.38 - 2 GPa)
-e_params.B = 1; % bending rigidity for microtubule (7e-25 - 7e-23 Nm^2)
-e_params.k = 1; % resting spring length between substrate and dimer
+e_params.S = 1000;%0.38e9; % spring constant for microtubule (0.38 - 2 GPa)
+e_params.B = 1e-20;%7e-25; % bending rigidity for microtubule (7e-25 - 7e-23 Nm^2)
+e_params.k = 1e-9; % resting spring length between substrate and dimer
 e_params.theta = 23*(pi/180); % preferred angle for gdp tubulin
 
 % initialize the kinetochore and microtubule
@@ -27,9 +27,8 @@ e_params.theta = 23*(pi/180); % preferred angle for gdp tubulin
 
 
 % let the microtubule curve and change phosphorylation state
-microtubule.curve()
+%microtubule.curve()
 microtubule.phosphorylate()
-
 
 % find new positions at next time step based on energy minimization
 % TO DO: still need to make this a loop where phos state is updated in the
@@ -42,7 +41,6 @@ for tstep = 2 : num_time_steps
     
     phos_state = microtubule.phos_state(:, :, tstep);
     energy_function = minimizer_target(microtubule.e_params, num_dimers, phos_state);
-    %energy_gradient = minimizer_target_gradient(microtubule.e_params, num_dimers, phos_state);
     
     % create input vector of initial guess for positions (use previous
     % positions) -> need to reshape initial guess vector to be 1 row with
@@ -66,9 +64,9 @@ for tstep = 2 : num_time_steps
 %             pos(j+num_dimers) = init_guess(j+num_dimers) + max_pos_delta * (pos(j+num_dimers)/abs(pos(j+num_dimers)));
 %         end
 %     end
-    
-    %microtubule.dimer_positions(:,:,tstep) = [pos(1:num_dimers); pos(num_dimers+1:end)];
-    microtubule.dimer_positions(:,:,tstep) = [microtubule.dimer_positions(1,:,time_step); pos(num_dimers+1:end)];
+%     
+%     microtubule.dimer_positions(:,:,tstep) = [pos(1:num_dimers); pos(num_dimers+1:end)];
+    microtubule.dimer_positions(:,:,tstep) = [microtubule.dimer_positions(1,:,tstep); pos(num_dimers+1:end)];
 end
 
 disp('done')
