@@ -1,6 +1,6 @@
 
 function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,...
-    tether_length, num_dimers, dimer_length, phosphor_params)
+    tether_length, num_dimers, dimer_length, phosphor_params, e_params)
     %{
     
     Initializes a kinetochore object with all hec1 proteins at the origin
@@ -24,6 +24,12 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
         2) params: vector
             probabilities: [p(phos|dephos), p(dephos|phos)]
             (assigned by input to function "phosphor_params")
+    e_params: structure containing parameters for microtubule energy 
+        minimization:
+        1) S = spring constant
+        2) B = bending rigidity 
+        3) k = resting spring length
+        4) theta = preferred angle for dephosphorylated tubulin
     
     Returns
     -------
@@ -43,15 +49,12 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
     
     % initialize microtubule properties
     dimer_positions = zeros(2, num_dimers, num_time_steps);
-    dimer_positions(1,:,:) = reshape(repmat(1:dimer_length:num_dimers,...
-        num_time_steps,1)',[1,num_dimers,num_time_steps]);
+    dimer_positions(1,:,:) = reshape(repmat(1:1:num_dimers,...
+       num_time_steps,1)',[1,num_dimers,num_time_steps]);
     phosphor.phos_state = zeros(1, num_dimers, num_time_steps); 
     phosphor.phos_state(:, :, 1) = ones(1, num_dimers);
     phosphor.params = phosphor_params;
     
     % construct microtubule object
-    microtubule = Microtubule(dimer_positions, dimer_length, phosphor);
+    microtubule = Microtubule(dimer_positions, dimer_length, phosphor, e_params);
 end
-
-
-
