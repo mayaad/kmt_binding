@@ -5,11 +5,11 @@ Tutorial for running a kinetochore microtubule binding simulation
 close all
 
 % choose initial parameters
-num_time_steps = 50;
+num_time_steps = 500;
 num_hec1 = 15;
 tether_length = 10e-9;
-prob_bind=[ones(num_hec1,1)*0.4, ones(num_hec1,1)*0.3]; % related to k_bind. Syntax is [Dephos Phos]
-prob_unbind=[ones(num_hec1,1)*0.1,ones(num_hec1,1)*0.3]; % related to k_unbind. Syntax is [Dephos Phos]
+prob_bind=[ones(num_hec1,1)*0.4, 0.3]; % related to k_bind. Syntax is [Dephos Phos]
+prob_unbind=[0.1, 0.3]; % related to k_unbind. Syntax is [Dephos Phos]
 prob_phos= 0.2;
 prob_dephos=0.2' 
 binding_distance = 5e-9;
@@ -122,14 +122,4 @@ if plot_var == 1
     plot(fraction_bound)
     xlabel('time')
     ylabel('bound fraction')
-    
-    %calculate the phosphorylated fraction for each timestep
-    fraction_phos = kinetochore.calc_fraction_phos();
-    
-    %plot phosphorylation over time
-    figure
-    plot(fraction_phos)
-    xlabel('time')
-    ylabel('phosphorylated fraction')
-    
 end

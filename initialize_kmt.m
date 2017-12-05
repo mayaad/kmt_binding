@@ -43,9 +43,10 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
     % initialize kinetochore properties
     hec1_positions = zeros(3, num_hec1, num_time_steps);
     hec1_bound = zeros(num_hec1, num_time_steps);
+    hec1_phos= ones(num_hec1, num_time_steps);
     
     % construct kinetochore object
-    kinetochore = Kinetochore(hec1_positions, hec1_bound, tether_length);
+    kinetochore = Kinetochore(hec1_positions, hec1_bound, tether_length, hec1_phos);
     
     % initialize microtubule properties
     dimer_positions = zeros(2, num_dimers, num_time_steps);
