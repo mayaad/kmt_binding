@@ -43,7 +43,7 @@ microtubule.phosphorylate()
 
 % option 2: calculate the microtubule dimer positions based on 
 % curvature predicted by theory
-smooth_window = floor(num_dimers/5);
+smooth_window = floor(num_dimers/5); % set to 1 if you want no smoothing
 microtubule.curve_theory(smooth_window)
 
 % let the kinetochore diffuse and bind and unbind from the microtubule
