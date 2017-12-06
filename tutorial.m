@@ -7,26 +7,26 @@ clc;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% choose parameters %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-num_time_steps = 50;             % number of time steps to run simulation
-num_hec1 = 10;                   % number of hec1 proteins in kinetochore
-tether_length = 10e-9;           % length of tether attaching hec1 to kinetochore
+num_time_steps = 50;          % number of time steps to run simulation
+num_hec1 = 10;                % number of hec1 proteins in kinetochore
+tether_length = 10e-9;        % length of tether attaching hec1 to kinetochore (m)
 prob_bind=[ones(num_hec1,1)*0.4,ones(num_hec1,1)*0.3]; % related to k_bind. Syntax is [Dephos Phos]
 prob_unbind=[ones(num_hec1,1)*0.1,ones(num_hec1,1)*0.3]; % related to k_unbind. Syntax is [Dephos Phos]
 prob_phos= 0.2;
 prob_dephos=0.2;
-binding_distance = 5e-9;         % distance at which hec1 binds to microtubule
-num_dimers = 20;                 % number of dimers in a microtubule
-dimer_length = 1;%6e-9           % 6 nm per tubulin dimer (6e-9 m)
-hec1_step = 0.5e-9;              % length of each step taken by hec1 in random walk
-mt_phosphor_params = [0.01, 0.1];  % microtubule phosphorylation probabilities
-                                 % [prob of phos, prob of dephos]
-e_params.S = 1;%0.38e9; % spring constant for microtubule (0.38 - 2 GPa)
-e_params.B = 1;%7e-25;   % bending rigidity for microtubule (7e-25 - 7e-23 Nm^2)
-e_params.k = 1;%1e-9;       % resting spring length between substrate and dimer
-e_params.theta = 23*(pi/180);    % preferred angle for gdp (dephos) tubulin
+binding_distance = 5e-9;      % distance at which hec1 binds to microtubule (m)
+num_dimers = 20;              % number of dimers in a microtubule
+dimer_length = 6e-9;          % length per tubulin dimer (6 nm)
+hec1_step = 0.5;              % length of each step taken by hec1 in random walk 0.5 nm
+mt_phosphor_params = [0.5, 0.5];  % microtubule phosphorylation probabilities
+                              % [prob of phos, prob of dephos]
+e_params.S = 0.38e9;          % spring constant for microtubule (0.38 - 2 GPa)
+e_params.B = 7e-25;           % bending rigidity for microtubule (7e-25 - 7e-23 Nm^2)
+e_params.k = 1e-9;            % resting spring length between substrate and dimer
+e_params.theta = 23*(pi/180); % preferred angle for gdp (dephos) tubulin
 
-max_pos_delta = 0.5;             % maximum change in dimer position at each time step
-monitor_minimization = 0;        % binary determining whether to plotprogress of minimization
+max_pos_delta = 0.5;          % maximum change in dimer position at each time step
+monitor_minimization = 0;     % binary determining whether to plotprogress of minimization
 
 
 %%%%%%%%%%%%%%%% initialize the kinetochore and microtubule %%%%%%%%%%%%%%%
@@ -40,7 +40,7 @@ monitor_minimization = 0;        % binary determining whether to plotprogress of
 microtubule.phosphorylate()
 
 %DONT FORGET TO TAKE THIS OUT OR YOU WILL BE SAD
-microtubule.dimer_positions(2,:,:)=zeros(1,8,num_time_steps);
+%microtubule.dimer_positions(2,:,:)=zeros(1,8,num_time_steps);
 
 % option 1: calculate the microtubule dimer positions based on 
 % energy minimization dyanamics 

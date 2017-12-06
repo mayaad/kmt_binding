@@ -9,18 +9,15 @@ num_time_steps = size(microtubule.dimer_positions,3);
 % plot
 hold on
 for time_step=1:num_time_steps
-    plot(microtubule.dimer_positions(1,:,time_step), microtubule.dimer_positions(2,:,time_step),'.', 'MarkerSize',20)
+    plot(microtubule.dimer_positions(1,:,time_step)*microtubule.dimer_length, microtubule.dimer_positions(2,:,time_step),'.', 'MarkerSize',20)
     %plot(microtubule.dimer_positions(1,:,time_step), microtubule.dimer_positions(2,:,time_step))
 end
-xlabel('x-position')
-ylabel('y-position')
+xlabel('x-position (m)')
+ylabel('y-position (m)')
 title('dimer positions')
 hold off
 
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subplot(2,2,2)
 % plot microtubule phosphorylation state over time
 
@@ -37,7 +34,7 @@ title('microtubule phosphorylation state')
 hold off
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subplot(2,2,3)
 % plot the trajectories of the hec1 proteins
 
@@ -61,10 +58,7 @@ zlabel('z')
 view(45,20)
 hold off
 
-
-
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 subplot(2,2,4)
 % plot the fraction bound over time
 
