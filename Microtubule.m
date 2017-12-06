@@ -80,17 +80,115 @@ classdef Microtubule < handle
                     change_variable = rand();
                     
                     if obj.phos_state(1, j, i-1) == 1 % dimer was GTP
-                        if change_variable > prob_dephos
+                        if change_variable > (1-prob_dephos)
                             obj.phos_state(1, j, i) = 0; % dimer becomes GDP
+                        else
+                            obj.phos_state(1, j, i) = 1; % dimer stays GTP
                         end
                     elseif obj.phos_state(1, j, i-1) == 0 % dimer was GDP
-                        if change_variable > prob_phos
+                        if change_variable > (1-prob_phos)
                             obj.phos_state(1, j, i) = 1; % dimer becomes GTP
+                        else
+                            obj.phos_state(1, j, i) = 0; % dimer stays GDP
                         end
                     end
                 end
             end
         end
+        
+        function curve_min_energy(microtubule, monitor_minimization)
+            
+            % get some parameters from the positions matrices
+            num_dimers = size(microtubule.dimer_positions,2);
+            num_time_steps = size(microtubule.dimer_positions,3);
+            
+            for tstep = 2 : num_time_steps
+
+                phos_state = microtubule.phos_state(:, :, tstep);
+                energy_function = minimizer_target(microtubule.e_params, num_dimers, phos_state);
+
+                % create input vector of initial guess for positions (use previous
+                % positions) -> need to reshape initial guess vector to be 1 row with
+                % 2*num_dimers columns
+                % guess(1:num_dimers) -> x values; guess(num_dimers+1, 2*num_dimers) -> y values
+                init_guess = [microtubule.dimer_positions(1,:, tstep-1), microtubule.dimer_positions(2,:, tstep-1)];
+
+                if monitor_minimization == 1
+                   options = optimset('PlotFcns',@optimplotfval); 
+                   [pos, energy] = fminsearch(energy_function, init_guess, options);
+                else
+                   [pos, energy] = fminsearch(energy_function, init_guess);
+                end
+
+            %     % update dimer positions and enforce a maximum change in position
+            %     for j = 1 : num_dimers   
+            %         if abs(pos(j)-init_guess(j)) > max_pos_delta
+            %             pos(j) = init_guess(j) + max_pos_delta * (pos(j)/abs(pos(j)));
+            %         end
+            %         if abs(pos(j+num_dimers)-init_guess(j+num_dimers)) > max_pos_delta
+            %             pos(j+num_dimers) = init_guess(j+num_dimers) + max_pos_delta * (pos(j+num_dimers)/abs(pos(j+num_dimers)));
+            %         end
+            %     end
+            %     
+            %     microtubule.dimer_positions(:,:,tstep) = [pos(1:num_dimers); pos(num_dimers+1:end)];
+                microtubule.dimer_positions(:,:,tstep) = [microtubule.dimer_positions(1,:,tstep); pos(num_dimers+1:end)];
+            end
+        end
+        
+        function curve_theory(microtubule, smooth_window)
+            % get some parameters from the positions matrices
+            num_dimers = size(microtubule.dimer_positions,2);
+            num_time_steps = size(microtubule.dimer_positions,3);
+            
+            for tstep = 2 : num_time_steps
+                % update y-positions based on theory
+                microtubule.dimer_positions(2,:,tstep) = ...
+                    bending_theory(microtubule.phos_state(:,:,tstep),...
+                                   microtubule.e_params,...
+                                   microtubule.dimer_positions(1,:,tstep),...
+                                   microtubule.dimer_length, smooth_window);
+            end
+            
+        end
+        
+        function plot_dimer_positions(obj)
+            % plots the dimer positions over time 
+            
+            % parameters pulled from position matrix
+            num_time_steps = size(obj.dimer_positions,3);
+            
+            % plot
+            figure
+            hold on
+            for time_step=1:num_time_steps
+                plot(obj.dimer_positions(1,:,time_step), obj.dimer_positions(2,:,time_step),'.', 'MarkerSize',20)
+                %plot(obj.dimer_positions(1,:,time_step), obj.dimer_positions(2,:,time_step))
+            end
+            xlabel('x-position')
+            ylabel('y-position')
+            title('dimer positions')
+            hold off
+        end
+        
+        function plot_phos_state(obj) 
+            % plot microtubule phosphorylation state over time
+            
+            % parameters pulled from position matrix
+            num_time_steps = size(obj.dimer_positions,3);
+
+            figure
+            hold on
+            for time_step = 1 : num_time_steps
+                plot(obj.phos_state(:, :, time_step))
+            end
+            xlabel('x-position')
+            ylabel('phosphorylation state (0-GDP, 1-GTP)')
+            title('microtubule phosphorylation state')
+            hold off
+            
+        end
+        
     end
 end
+
 

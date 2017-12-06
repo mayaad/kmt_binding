@@ -189,6 +189,45 @@ classdef Kinetochore < handle
             
         end
         
+        function plot_hec1_trajectories(obj)
+            % plot the trajectories of the hec1 proteins
+            
+            % get some parameters from position matries
+            num_time_steps = size(obj.hec1_positions,3);
+            num_hec1 = size(obj.hec1_positions,2);
+            
+            % plot
+            figure
+            hold on
+            for hec1=1:num_hec1
+                x = reshape(obj.hec1_positions(1,hec1,:),[1,num_time_steps]);
+                y = reshape(obj.hec1_positions(2,hec1,:),[1,num_time_steps]);
+                z = reshape(obj.hec1_positions(3,hec1,:),[1,num_time_steps]);
+                plot3(x, y, z)
+                hold on
+            end
+            title('hec1 trajectories')
+            xlabel('x')
+            ylabel('y')
+            zlabel('z')
+            view(45,20)
+            hold off 
+        end
+        
+        function plot_fraction_bound(obj)
+            % plot the fraction bound over time
+            
+            % calculate fraction bound
+            fraction_bound = obj.calc_fraction_bound();
+            
+            % plot
+            figure
+            plot(fraction_bound)
+            xlabel('time')
+            ylabel('bound fraction')
+            title('bound fraction over time')
+        end
+        
     end
 end
 
