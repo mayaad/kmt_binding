@@ -33,7 +33,7 @@ classdef Kinetochore < handle
             obj.hec1_phos=hec1_phos;
         end
         
-        function diffuse_bind_unbind(obj, microtubule, prob_bind, prob_unbind, prob_phos, prob_dephos, binding_distance, hec1_step, dimer_length)
+        function diffuse_bind_unbind(obj, microtubule, prob_bind, prob_unbind, binding_distance, hec1_step, dimer_length)
             %{
             
             Calculates diffusion and binding/unbinding of hec1 proteins in
@@ -50,10 +50,6 @@ classdef Kinetochore < handle
                 prbability of binding, related to k_bind
             prob_unbind: float
                 probability of unbinding, related to k_unbind
-            prob_phos: float
-                prbability of phosphorylating
-            prob_dephos: float
-                probability of dephosphorylating
             binding_distance: float
                 distance at which kinetochore can bind to microtubule
             hec1_step: float
@@ -119,18 +115,18 @@ classdef Kinetochore < handle
                         (obj.hec1_positions(2,hec1,time)-dimer_length*microtubule.dimer_positions(2,:,time)).^2+...
                         (obj.hec1_positions(3,hec1,time)).^2));
                 end
-                
+assignin('base', 'min_distance_mt', min_distance_mt);
                 % find indices for unbound hec1 that bind
                 ind_bind_new = find(min_distance_mt(:,time)<binding_distance...
-                    & rand_bind(:,time)<prob_bind(obj.hec1_phos(:,time-1)));
+                    & rand_bind(:,time)<prob_bind);
                 
                 % find indices for bound hec1 that stay bound
                 ind_bind_stay = find(min_distance_mt(:,time)<binding_distance...
-                    & obj.hec1_bound(:,time-1)==1 & rand_unbind(:,time)>prob_unbind(obj.hec1_phos(:,time-1)));
+                    & obj.hec1_bound(:,time-1)==1 & rand_unbind(:,time)>prob_unbind);
                 
                 % find indices for bound hec1 that unbind
                 ind_unbind_new = find(min_distance_mt(:,time)<binding_distance...
-                    & obj.hec1_bound(:,time-1)==1 & rand_unbind(:,time)<prob_unbind(obj.hec1_phos(:,time-1)));
+                    & obj.hec1_bound(:,time-1)==1 & rand_unbind(:,time)<prob_unbind);
                 
                
                 % update hec1_bound
@@ -139,14 +135,14 @@ classdef Kinetochore < handle
                 obj.hec1_bound(ind_unbind_new,time) = 0;
                 
                 %phosphorylated and dephosphorylate the Hec1
-                ind_phos_new = find(rand_phos(:,time)<prob_phos);
-                ind_dephos_new = find(rand_dephos(:,time)<prob_dephos);
-                obj.hec1_phos(:,time)=obj.hec1_phos(:,time-1);
-                obj.hec1_phos(ind_phos_new,time)=2;
-                obj.hec1_phos(ind_dephos_new,time)=1;
+                ind_phos_new = find(rand_phos(:,time)<prob_bind);
+                ind_dephos_new = find(rand_phos(:,time)<prob_bind;
                 
                 
                 
+                
+                
+assignin('base', 'obj', obj);
             end            
         end
         function fraction_bound = calc_fraction_bound(obj)
@@ -167,65 +163,6 @@ classdef Kinetochore < handle
                 %}
                 fraction_bound = sum(obj.hec1_bound)/size(obj.hec1_bound,1);
             
-        end
-        
-        function fraction_phos = calc_fraction_phos(obj)
-                %{
-    
-                Calculates a phosphorylated fraction for the kinetochore object
-
-                Parameters
-                ----------
-                kinetochore: Kinetochore object
-                    object of the Kinetochore class 
-
-                Returns
-                -------
-                fraction_phos: double
-                    fraction of hec1 proteins that are phosphorylated
-
-                %}
-                fraction_phos = sum(obj.hec1_phos-1)/size(obj.hec1_phos,1);
-            
-        end
-        
-        function plot_hec1_trajectories(obj)
-            % plot the trajectories of the hec1 proteins
-            
-            % get some parameters from position matries
-            num_time_steps = size(obj.hec1_positions,3);
-            num_hec1 = size(obj.hec1_positions,2);
-            
-            % plot
-            figure
-            hold on
-            for hec1=1:num_hec1
-                x = reshape(obj.hec1_positions(1,hec1,:),[1,num_time_steps]);
-                y = reshape(obj.hec1_positions(2,hec1,:),[1,num_time_steps]);
-                z = reshape(obj.hec1_positions(3,hec1,:),[1,num_time_steps]);
-                plot3(x, y, z)
-                hold on
-            end
-            title('hec1 trajectories')
-            xlabel('x')
-            ylabel('y')
-            zlabel('z')
-            view(45,20)
-            hold off 
-        end
-        
-        function plot_fraction_bound(obj)
-            % plot the fraction bound over time
-            
-            % calculate fraction bound
-            fraction_bound = obj.calc_fraction_bound();
-            
-            % plot
-            figure
-            plot(fraction_bound)
-            xlabel('time')
-            ylabel('bound fraction')
-            title('bound fraction over time')
         end
         
     end
