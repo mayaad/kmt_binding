@@ -18,9 +18,9 @@ dimer_length = 1;%6e             % 6 nm per tubulin dimer (6e-9 m)
 hec1_step = 0.5e-9;              % length of each step taken by hec1 in random walk
 mt_phosphor_params = [0.01, 0.1];  % microtubule phosphorylation probabilities
                                  % [prob of phos, prob of dephos]
-e_params.S = 0.1;%1000;% 0.38e9; % spring constant for microtubule (0.38 - 2 GPa)
-e_params.B = 1; %1e-20;%7e-25;   % bending rigidity for microtubule (7e-25 - 7e-23 Nm^2)
-e_params.k = 0; %10 %1e-9;       % resting spring length between substrate and dimer
+e_params.S = 1;%0.38e9; % spring constant for microtubule (0.38 - 2 GPa)
+e_params.B = 1;%7e-25;   % bending rigidity for microtubule (7e-25 - 7e-23 Nm^2)
+e_params.k = 1;%1e-9;       % resting spring length between substrate and dimer
 e_params.theta = 23*(pi/180);    % preferred angle for gdp (dephos) tubulin
 
 max_pos_delta = 0.5;             % maximum change in dimer position at each time step
@@ -55,9 +55,11 @@ fraction_bound = kinetochore.calc_fraction_bound();
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% plot  results %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-microtubule.plot_dimer_positions()
-microtubule.plot_phos_state()
-kinetochore.plot_hec1_trajectories()
-kinetochore.plot_fraction_bound()
 
+% microtubule.plot_dimer_positions()
+% microtubule.plot_phos_state()
+% kinetochore.plot_hec1_trajectories()
+% kinetochore.plot_fraction_bound()
+
+plot_all(microtubule, kinetochore)
 
