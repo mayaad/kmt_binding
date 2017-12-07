@@ -17,7 +17,8 @@ prob_dephos=0.2;
 binding_distance = 5e-9;      % distance at which hec1 binds to microtubule (m)
 num_dimers = 20;              % number of dimers in a microtubule
 dimer_length = 6e-9;          % length per tubulin dimer (6 nm)
-hec1_step = 0.5;              % length of each step taken by hec1 in random walk 0.5 nm
+hec1_step = 0.5e-9;              % length of each step taken by hec1 in random walk 0.5 nm
+
 mt_phosphor_params = [0.5, 0.5];  % microtubule phosphorylation probabilities
                               % [prob of phos, prob of dephos]
 e_params.S = 0.38e9;          % spring constant for microtubule (0.38 - 2 GPa)
@@ -39,9 +40,6 @@ monitor_minimization = 0;     % binary determining whether to plotprogress of mi
 % let the microtubule change phosphorylation state
 microtubule.phosphorylate()
 
-%DONT FORGET TO TAKE THIS OUT OR YOU WILL BE SAD
-%microtubule.dimer_positions(2,:,:)=zeros(1,8,num_time_steps);
-
 % option 1: calculate the microtubule dimer positions based on 
 % energy minimization dyanamics 
 %microtubule.curve_min_energy(monitor_minimization)
@@ -54,7 +52,7 @@ microtubule.curve_theory(smooth_window)
 % let the kinetochore diffuse and bind and unbind from the microtubule
 kinetochore.diffuse_bind_unbind(microtubule,prob_bind, prob_unbind,...
                                 prob_phos, prob_dephos, binding_distance,...
-                                hec1_step,dimer_length)
+                                hec1_step, dimer_length)
 
 % calculate the fraction bound for each time step
 fraction_bound = kinetochore.calc_fraction_bound();
@@ -68,11 +66,6 @@ figure
 plot(fraction_phos)
 xlabel('time')
 ylabel('phosphorylated fraction')
-
-% microtubule.plot_dimer_positions()
-% microtubule.plot_phos_state()
-% kinetochore.plot_hec1_trajectories()
-% kinetochore.plot_fraction_bound()
 
 plot_all(microtubule, kinetochore)
 

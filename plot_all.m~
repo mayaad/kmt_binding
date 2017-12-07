@@ -15,6 +15,7 @@ end
 xlabel('x-position (nm)')
 ylabel('y-position (nm)')
 title('microtubule shape')
+legend('t0
 hold off
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,13 +49,13 @@ for hec1=1:num_hec1
     x = reshape(kinetochore.hec1_positions(1,hec1,:),[1,num_time_steps]);
     y = reshape(kinetochore.hec1_positions(2,hec1,:),[1,num_time_steps]);
     z = reshape(kinetochore.hec1_positions(3,hec1,:),[1,num_time_steps]);
-    plot3(x*(10^9), y*(10^9), z*(10^9))
+    plot3(x, y, z)
     hold on
 end
 title('hec1 trajectories')
-xlabel('x (nm)')
-ylabel('y (nm)')
-zlabel('z (nm)')
+xlabel('x')
+ylabel('y')
+zlabel('z')
 view(45,20)
 hold off
 
@@ -67,7 +68,7 @@ fraction_bound = kinetochore.calc_fraction_bound();
 
 % plot
 plot(fraction_bound)
-xlabel('time steps')
+xlabel('time')
 ylabel('bound fraction')
 title('bound fraction over time')
 
