@@ -161,11 +161,11 @@ classdef Microtubule < handle
             figure
             hold on
             for time_step=1:num_time_steps
-                plot(obj.dimer_positions(1,:,time_step), obj.dimer_positions(2,:,time_step),'.', 'MarkerSize',20)
+                plot(obj.dimer_positions(1,:,time_step)*obj.dimer_length, obj.dimer_positions(2,:,time_step),'.', 'MarkerSize',20)
                 %plot(obj.dimer_positions(1,:,time_step), obj.dimer_positions(2,:,time_step))
             end
-            xlabel('x-position')
-            ylabel('y-position')
+            xlabel('x-position (m)')
+            ylabel('y-position (m)')
             title('dimer positions')
             hold off
         end
