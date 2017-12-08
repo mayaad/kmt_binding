@@ -1,4 +1,4 @@
-function [A_fit] = avg_frac_bound(results_struct, time, plot_var)
+function [A_fit] = avg_frac_bound(results_struct, time, plot_avg, plot_fit)
 
 % deal with averaging all simulation results
 % average fraction bound over time
@@ -11,7 +11,7 @@ for j = 1 : length(average_fraction_bound)
     average_fraction_bound(j) = total / length(results_struct);
 end
 
-if plot_var == 1   
+if plot_avg == 1   
     figure
     for i = 1 : length(results_struct)
         hold on
@@ -25,20 +25,22 @@ if plot_var == 1
 end
 
 % % fit average to a saturating exponential to pull out a time scale
-logistic = @(A, x)(A(1)./(1+exp(-A(2).*(x-A(3)))));
-A0 = 0.01*zeros(3,1); % initial guess for parameters
+%logistic = @(A, x)((A(1).*exp(A(2)*(x-A(3))./((1+exp(-A(2).*(x-A(3)))));
+logistic = @(A,x)(A(1).*(1-exp(-A(2).*x)));
+A0 = [0.2, 1000]; % initial guess for parameters
 A_fit = nlinfit(time', average_fraction_bound, logistic, A0);
 fit_fxn = feval(logistic, A_fit, time);
 
-figure
-for i = 1 : length(results_struct)
-    hold on
-    plot(time, results_struct(i).fraction_bound, 'b')
+if plot_fit == 1
+    figure
+    for i = 1 : length(results_struct)
+        hold on
+        plot(time, results_struct(i).fraction_bound, 'b')
+    end
+    plot(time, average_fraction_bound, 'r', 'LineWidth', 4)
+    plot(time, fit_fxn, 'g', 'LineWidth', 4)
+    xlabel('time step'); ylabel('fraction bound')
+    title('blue: individual traces; red: average; green: fit')
 end
-plot(time, average_fraction_bound, 'r', 'LineWidth', 4)
-plot(time, fit_fxn, 'g', 'LineWidth', 4)
-xlabel('time step'); ylabel('fraction bound')
-title('blue: individual traces; red: average; green: fit')
-
 end
 

@@ -12,10 +12,10 @@ num_hec1 = 10;                % number of hec1 proteins in kinetochore
 tether_length = 100e-9;        % length of tether attaching hec1 to kinetochore (m)
 binding_distance = 5e-9;      % distance at which hec1 binds to microtubule (m)
 hec1_step = 6e-9;              % length of each step taken by hec1 in random walk (m)
-prob_on_dephos = 3.1968e-2; %3.1968e-4; 
-prob_on_phos = 0.24; %0.0024;
-prob_off_dephos = 4.5e-3; %4.5e-5;
-prob_off_phos = 1.8e-3;%1.8e-5;
+prob_on_dephos = %3.1968e-4; 
+prob_on_phos = 0.0024;
+prob_off_dephos = 4.5e-5;
+prob_off_phos = 1.8e-5;
 prob_bind=[ones(num_hec1,1)*prob_on_dephos,ones(num_hec1,1)*prob_on_phos];
 prob_unbind=[ones(num_hec1,1)*prob_off_dephos,ones(num_hec1,1)*prob_off_phos];
     % above parameters govern probabilities of binding to microtubule given
@@ -39,7 +39,7 @@ mt_phosphor_params = [0.4, 0.7]; % microtubule prob [phos, dephos]
 num_time_steps = 100;          % number of time steps to run simulation
 time_step = 1.8e-4; %sec
 time = (1 : 1 : num_time_steps).*time_step;
-num_runs = 20;                % number of runs over which to avg sim
+num_runs = 10;                % number of runs over which to avg sim
 % max_pos_delta = 0.5;          % maximum change in dimer position at each time step
 % monitor_minimization = 0;     % binary determining whether to plotprogress of minimization
 save_rep = 0; % set to 1 if representative 4-panel fig should be saved
@@ -54,7 +54,7 @@ plot_fit = 1; % set to 1 if figure with fit for avg bound should be displayed
 %%%%%%%%%%%%%%%%%%%%%%%%% run the simulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % set parameter to vary
-S_full = linspace(0.38e4, 0.38e12, 10);
+S_full = linspace(0.38e4, 0.38e12, 20);
 
 %prob_on_dephos = 3.1968e-4; 
 %prob_on_phos = 0.0024;
