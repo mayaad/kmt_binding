@@ -1,4 +1,6 @@
-function plot_all(microtubule, kinetochore)
+function plot_all(microtubule, kinetochore, time)
+
+figure
 
 subplot(2,2,1)
 % plots the dimer positions over time
@@ -10,7 +12,6 @@ num_time_steps = size(microtubule.dimer_positions,3);
 hold on
 for time_step=1:num_time_steps
     plot(microtubule.dimer_positions(1,:,time_step)*microtubule.dimer_length*(10^9), microtubule.dimer_positions(2,:,time_step)*(10^9),'.', 'MarkerSize',20)
-    %plot(microtubule.dimer_positions(1,:,time_step), microtubule.dimer_positions(2,:,time_step))
 end
 xlabel('x-position (nm)')
 ylabel('y-position (nm)')
@@ -64,10 +65,9 @@ subplot(2,2,4)
 
 % calculate fraction bound
 fraction_bound = kinetochore.calc_fraction_bound();
-
 % plot
-plot(fraction_bound)
-xlabel('time steps')
+plot(time, fraction_bound)
+xlabel('time (sec)')
 ylabel('bound fraction')
 title('bound fraction over time')
 

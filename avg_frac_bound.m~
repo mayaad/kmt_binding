@@ -38,7 +38,7 @@ end
 plot(time, average_fraction_bound, 'r', 'LineWidth', 4)
 plot(time, fit_fxn, 'g', 'LineWidth', 4)
 xlabel('time step'); ylabel('fraction bound')
-title('blue: individual traces; red: average; green: fit')
+title('blue: individual traces; red: average; g
 
 end
 
