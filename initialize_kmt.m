@@ -45,6 +45,15 @@ function [kinetochore, microtubule] = initialize_kmt(num_time_steps, num_hec1,..
     hec1_bound = zeros(num_hec1, num_time_steps);
     hec1_phos= ones(num_hec1, num_time_steps);
     
+    %Set the initial Hec1 Positions randomly within the tether sphere
+    Radius=tether_length*(rand(num_hec1,1).^(1/3));
+    Theta=pi*rand(num_hec1,1);
+    Phi=2*pi*rand(num_hec1,1);
+    
+    hec1_positions(1,:,1)=Radius.*sin(Theta).*cos(Phi);
+    hec1_positions(2,:,1)=Radius.*sin(Theta).*sin(Phi);
+    hec1_positions(3,:,1)=Radius.*cos(Theta);
+    
     % construct kinetochore object
     kinetochore = Kinetochore(hec1_positions, hec1_bound, tether_length, hec1_phos);
     

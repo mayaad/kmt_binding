@@ -12,15 +12,15 @@ num_hec1 = 10;                % number of hec1 proteins in kinetochore
 tether_length = 100e-9;        % length of tether attaching hec1 to kinetochore (m)
 binding_distance = 5e-9;      % distance at which hec1 binds to microtubule (m)
 hec1_step = 6e-9;              % length of each step taken by hec1 in random walk (m)
-prob_on_dephos = 3.1968e-2; %3.1968e-4; 
-prob_on_phos = 0.24; %0.0024;
-prob_off_dephos = 4.5e-3; %4.5e-5;
-prob_off_phos = 1.8e-3;%1.8e-5;
+prob_on_dephos = 3.1968e-4*100; 
+prob_on_phos = 0.0024*100;
+prob_off_dephos = 4.5e-5*100;
+prob_off_phos = 1.8e-5*100;
 prob_bind=[ones(num_hec1,1)*prob_on_dephos,ones(num_hec1,1)*prob_on_phos];
 prob_unbind=[ones(num_hec1,1)*prob_off_dephos,ones(num_hec1,1)*prob_off_phos];
     % above parameters govern probabilities of binding to microtubule given
     % phosphorylation state of hec1 molecule
-prob_phos= 0.7; 
+prob_on_dephos= 0.4; 
 prob_dephos= 0.7;
     % n.b. there is no good data on phosphorylation probabilities of hec1
     % by auroraB
@@ -54,19 +54,18 @@ plot_fit = 1; % set to 1 if figure with fit for avg bound should be displayed
 %%%%%%%%%%%%%%%%%%%%%%%%% run the simulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % set parameter to vary
-S_full = linspace(0.38e4, 0.38e12, 10);
+n_varying_params = 10;
+prob_off_dephos_full = linspace(4.5e-5*10, 4.5e-5*10^4, n_varying_params);
 
-%prob_on_dephos = 3.1968e-4; 
-%prob_on_phos = 0.0024;
 
-tau_store = zeros(length(S_full), 1);
-coeff_store = zeros(length(S_full), 1);
+tau_store = zeros(n_varying_params, 1);
+coeff_store = zeros(n_varying_params, 1);
 
 % run a number of simulations to average and fit average to see parameters
 % change over time
-for a = 1 : 1: length(S_full);
+for a = 1 : 1: n_varying_params;
     
-    e_params.S = S_full(a);
+   prob_off_dephos = prob_off_dephos_full(a); 
     %prob_bind=[ones(num_hec1,1)*prob_on_dephos(a),ones(num_hec1,1)*prob_on_phos(a)];
     
     for i = 1 : num_runs
@@ -85,7 +84,7 @@ for a = 1 : 1: length(S_full);
         
         % let the kinetochore diffuse and bind and unbind from the microtubule
         kinetochore.diffuse_bind_unbind(microtubule,prob_bind, prob_unbind,...
-            prob_phos, prob_dephos, binding_distance,...
+            prob_on_dephos, prob_dephos, binding_distance,...
             hec1_step, dimer_length)
         
         % calculate the fraction bound for each time step
@@ -111,16 +110,15 @@ for a = 1 : 1: length(S_full);
     
     % average runs and store fit parameters
     fit_params = avg_frac_bound(total_simulation, time, plot_avg, plot_fit);
-    % fit is (A(1)./(1+exp(-A(2).*(x-A(3)))))
     tau_store(a) = 1/fit_params(2);
     coeff_store(a) = fit_params(1);    
 end
 
 figure
-plot(S_full, tau_store, '.-', 'MarkerSize', 20)
-xlabel('S'); ylabel('tau'); title('fit time scale varying with S')
+plot(prob_off_dephos_full, tau_store, '.-', 'MarkerSize', 20)
+xlabel('prob on dephos hec1'); ylabel('tau'); title('fit time scale')
 figure
-plot(S_full, coeff_store, '.-', 'MarkerSize', 20)
-xlabel('S'); ylabel('A'); title('fit coefficient varying with S')
+plot(prob_off_dephos_full, coeff_store, '.-', 'MarkerSize', 20)
+xlabel('prob on dephos hec1'); ylabel('A'); title('fit coefficient')
 
 
